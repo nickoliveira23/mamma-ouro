@@ -1,0 +1,56 @@
+{
+  "name": "mobile-mamma-ouro",
+  "author": {
+    "name": "Nickolas",
+    "email": "nickolas.oliveira02@gmail.com",
+    "url": "https://www.linkedin.com/in/nickolas-oliveira/"
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "~1.15.0",
+    "@react-native-community/datetimepicker": "4.0.0",
+    "@react-navigation/bottom-tabs": "^6.2.0",
+    "@react-navigation/native": "^6.0.8",
+    "@react-navigation/native-stack": "^6.5.0",
+    "@react-navigation/stack": "^6.1.1",
+    "axios": "^0.26.1",
+    "expo": "~44.0.2",
+    "expo-dev-client": "^0.8.6",
+    "expo-location": "~14.0.1",
+    "expo-splash-screen": "~0.14.1",
+    "expo-status-bar": "~1.2.0",
+    "expo-updates": "^0.11.7",
+    "moment": "^2.29.3",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-native": "0.64.3",
+    "react-native-gesture-handler": "~2.1.0",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-maps": "0.29.4",
+    "react-native-mask-input": "^1.2.0",
+    "react-native-modal-datetime-picker": "^13.1.0",
+    "react-native-reanimated": "~2.3.1",
+    "react-native-safe-area-context": "3.3.2",
+    "react-native-unimodules": "~0.15.0",
+    "react-native-web": "0.17.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "@types/jest": "^27.4.1",
+    "@types/react": "~17.0.21",
+    "@types/react-native": "~0.64.12",
+    "@types/react-test-renderer": "^17.0.1",
+    "babel-jest": "^27.5.1",
+    "jest": "^26.6.3",
+    "react-test-renderer": "^17.0.2",
+    "typescript": "~4.3.5"
+  },
+  "private": true
+}

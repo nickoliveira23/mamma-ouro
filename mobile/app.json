@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "Mama de Ouro",
+    "slug": "mobile-mamma-ouro",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "splash": {
+      "image": "./src/assets/Splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#85A6B9"
+    },
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "mobile-mamma-ouro"
+}

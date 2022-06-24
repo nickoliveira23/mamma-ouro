@@ -1,0 +1,84 @@
+import { StyleSheet, Dimensions } from 'react-native';
+import Constants from 'expo-constants';
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+    paddingTop: Constants.statusBarHeight + 50,
+  },
+
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  leftIcon: {
+    marginLeft: '5%'
+  },
+
+  content: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '10%'
+  },
+
+  viewTitle: {
+    marginBottom: '10%'
+  },
+
+  title: {
+    fontWeight: 'bold',
+    fontSize: 45,
+    color: "#414141"
+  },
+
+  inputViews: {
+
+  },
+
+  inputTextView: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderColor: "#C3C3C5",
+    padding: 15,
+    marginBottom: 40,
+  },
+
+  inputText: {
+    width: Dimensions.get('window').width - 150,
+    marginLeft: 5,
+    fontSize: 15,
+    color: '#414141',
+    paddingLeft: 10
+  },
+
+  rememberText: {
+    color: '#C3C3C5',
+    fontSize: 11,
+    textAlign: 'center'
+  },
+
+  errorMessage: {
+    color: '#FF0000',
+    marginBottom: 20,
+    textAlign: 'center'
+  },
+
+  viewButton: {
+    marginTop: 50,
+  },
+
+  button: {
+    width: Dimensions.get('window').width - 60,
+    padding: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+    borderColor: '#707070',
+    borderWidth: 1,
+  },
+})
+
+export default styles;
