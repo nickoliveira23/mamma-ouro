@@ -56,8 +56,9 @@ routes.get('/hospital/availability/:id', HospitalController.verifyAvailability);
 //COLLABORATOR
 routes.post('/collaborator/register', CollaboratorController.register);
 routes.post('/collaborator/validate', CollaboratorController.validate);
+routes.put('/collaborator/update/:id', CollaboratorController.updateCollaborator);
 routes.get('/collaborator/list/all', CollaboratorController.indexAll);
-routes.get('/collaborator/list/hospital/:id', CollaboratorController.indexByHospitalId);
+routes.get('/collaborator/list/hospital/:id_hospital', CollaboratorController.indexByHospitalId);
 routes.get('/collaborator/list/:id', CollaboratorController.indexById);
 
 //SCHEDULE

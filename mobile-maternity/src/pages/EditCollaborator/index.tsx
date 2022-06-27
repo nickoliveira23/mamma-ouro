@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard } from 'react-native';
 import { useNavigation, RouteProp, useRoute, CommonActions } from '@react-navigation/native';
-import DateTimePickerModal from "react-native-modal-datetime-picker"
-import moment from 'moment';
 import { AntDesign } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import styles from './styles'
@@ -15,40 +13,47 @@ import { StackParamList } from '../../types';
 /*Aqui é criado um type para que ao navegar entre telas seja possível passar 
 parâmetros definidos no StackParamList onde foi declarado quais parametros 
 cada tela recebe*/
-type screenNavigationType = StackNavigationProp<StackParamList, 'EditDependent'>
-type editDependentScreenRouteType = RouteProp<StackParamList, 'EditDependent'>
+type screenNavigationType = StackNavigationProp<StackParamList, 'EditCollaborator'>
+type editCollaboratorScreenRouteType = RouteProp<StackParamList, 'EditCollaborator'>
 
-export default function EditDonor() {
+export default function EditCollaborator() {
     const navigation = useNavigation<screenNavigationType>();
-    const route = useRoute<editDependentScreenRouteType>();
+    const route = useRoute<editCollaboratorScreenRouteType>();
 
     const { params } = route;
 
     const [id, setId] = useState('');
     const [name, setName] = useState('');
-    const [birth, setBirth] = useState('');
+    const [role, setRole] = useState('');
     const [errorMessage, setErrorMessage] = useState(null);
-    const [isPickerShow, setIsPickerShow] = useState(false);
 
     useEffect(() => {
-        async function LoadData(dependent: any) {
-            setId(dependent.id);
-            setName(dependent.name);
-            setBirth(dependent.birth);
+        async function LoadData(collaborator: any) {
+            if (collaborator) {
+                setId(collaborator.id)
+                setName(collaborator.name);
+                setRole(collaborator.role)
+            } else {
+                const response = await api.get(`/collaborator/list/${params.id}`)
+
+                setId(response.data.id)
+                setName(response.data.name);
+                setRole(response.data.role);
+            }
         }
-        LoadData(params.dependent);
-    }, []);
+        LoadData(params.collaborator);
+    }, [params.id]);
 
     async function handleUpdate() {
         try {
-            const validation = await api.post('/dependent/validate', {
+            const validation = await api.post('/collaborator/validate', {
                 name: name,
-                birth: birth,
+                role: role,
             });
 
-            await api.put(`/dependent/update/${id}`, {
+            await api.put(`/collaborator/update/${id}`, {
                 name: name,
-                birth: birth,
+                role: role,
             });
 
             Alert.alert(validation.data.message)
@@ -77,19 +82,6 @@ export default function EditDonor() {
             Keyboard.dismiss()
         }
     }
-
-    const showDatePicker = () => {
-        setIsPickerShow(true);
-    };
-
-    const hideDatePicker = () => {
-        setIsPickerShow(false);
-    };
-
-    const handleConfirm = (date: any) => {
-        setBirth(date);
-        hideDatePicker();
-    };
 
     return (
         <View style={styles.container}>
@@ -124,20 +116,21 @@ export default function EditDonor() {
                     />
                 </View>
                 <View style={styles.viewInput}>
-                    <Text style={styles.titles}>DATA DE NASCIMENTO*</Text>
-                    <View style={styles.textInput}>
-                        <Text style={{ marginTop: 10, fontWeight: '200' }} onPress={showDatePicker}>
-                            {moment(birth).format('DD/MM/YYYY')}
-                        </Text>
-                    </View>
-                    {isPickerShow && (
-                        <DateTimePickerModal
-                            isVisible={isPickerShow}
-                            mode="date"
-                            onConfirm={handleConfirm}
-                            onCancel={hideDatePicker}
-                        />
-                    )}
+                    <Text style={styles.titles}>CARGO*</Text>
+                    <TextInput
+                        style={styles.textInput}
+                        editable={false} 
+                        selectTextOnFocus={false}
+                        keyboardType='default'
+                        multiline={false}
+                        clearButtonMode='always'
+                        maxLength={25}
+                        placeholder='Adicione o cargo'
+                        placeholderTextColor="#C3C3C5"
+                        value={role}
+                        onChangeText={role => setRole(role)}
+                        onPressIn={() => setErrorMessage(null)}
+                    />
                 </View>
             </View>
         </View>

@@ -30,8 +30,8 @@ export default function UserProfile() {
     const [id, setId] = useState('');
     const [name, setName] = useState('');
     const [role, setRole] = useState('');
-
     const [hospitalId, setHospitalId] = useState('');
+
     const [hospitalName, setHospitalName] = useState('');
     const [cnpj, setCNPJ] = useState('');
     const [street, setStreet] = useState('');
@@ -84,7 +84,7 @@ export default function UserProfile() {
             setId(response.data.id);
             setName(response.data.name);
             setRole(response.data.role);
-            
+            setHospitalId(response.data.id_hospital)
         } catch (err: any) {
             console.log(err.response.data)
             Alert.alert(err.response.data)
@@ -98,15 +98,14 @@ export default function UserProfile() {
 
     async function loadHospital(signal: AbortSignal) {
         try {
-            const response = await api.get(`/hospital/list/${id}`, {
+            const response = await api.get(`/hospital/list/${hospitalId}`, {
                 signal,
             });
 
-            setHospitalId(response.data.id);
-            setHospitalName(response.data.name);
+            setHospitalName(response.data.company);
             setCNPJ(response.data.cnpj);
             setStreet(response.data.street);
-            setNumber(JSON.stringify(response.data.number));
+            setNumber(response.data.number);
             setCity(response.data.city);
             setDistrict(response.data.district);
             setUf(response.data.uf);
@@ -119,15 +118,20 @@ export default function UserProfile() {
     }
 
     useEffect(() => {
-        loadHospital(signal);
-        return () => controller.abort();
-    }, [id])
+        if (hospitalId) {
+            loadHospital(signal);
+            return () => controller.abort();
+        }
+    }, [hospitalId])
 
     async function loadCollaborators(signal: AbortSignal) {
         try {
             if (flag === true) {
                 const response = await api.get(`/collaborator/list/hospital/${hospitalId}`, {
-                    signal
+                    signal,
+                    headers: {
+                        id_collaborator: id
+                    }
                 });
 
                 setCollaborators(response.data);
@@ -160,37 +164,49 @@ export default function UserProfile() {
         // and set isRefreshing to false at the end of your callApiMethod()
     }
 
-    const goToDonorEdit = () => {
+    const goToHospitalEdit = () => {
         navigation.dispatch(
             CommonActions.navigate({
-                name: 'EditDonor',
+                name: 'EditHospital',
                 params: {
-                    id: params.id,
+                    id: hospitalId,
                 }
             })
         )
     }
 
-    const goToDependent = () => {
+    // const goToCollaborator = () => {
+    //     navigation.dispatch(
+    //         CommonActions.navigate({
+    //             name: 'Collaborator',
+    //             params: {
+    //                 id: params.id,
+    //                 id_hospital: id
+    //             }
+    //         })
+    //     );
+    // }
+
+    const goToEditCollaborator = () => {
         navigation.dispatch(
             CommonActions.navigate({
-                name: 'Dependent',
+                name: 'EditCollaborator',
                 params: {
                     id: params.id,
-                    id_donor: id
+                    id_collaborator: id
                 }
             })
         );
     }
 
-    const goToEditDependent = (dependent: any) => {
+    const goToEditCollaborators = (collaborator: any) => {
         navigation.dispatch(
             CommonActions.navigate({
-                name: 'EditDependent',
+                name: 'EditCollaborator',
                 params: {
                     id: params.id,
-                    id_donor: id,
-                    dependent
+                    id_collaborator: id,
+                    collaborator
                 }
             })
         );
@@ -199,7 +215,7 @@ export default function UserProfile() {
     return (
         <View style={styles.container}>
             <View style={styles.viewFlatList}>
-                {!flag && <Text style={styles.textWaiting}>{text}</Text>}
+                {/* {!flag && <Text style={styles.textWaiting}>{text}</Text>} */}
                 <FlatList
                     showsVerticalScrollIndicator={false}
                     onRefresh={onRefresh}
@@ -218,7 +234,7 @@ export default function UserProfile() {
                             </View>
 
                             <View style={styles.profile}>
-                                <TouchableOpacity style={styles.icon} onPress={goToDonorEdit}>
+                                <TouchableOpacity style={styles.icon} onPress={() => goToHospitalEdit()}>
                                     <FontAwesome name={'pencil-square-o'} size={25} color={'#A1E1D8'}></FontAwesome>
                                 </TouchableOpacity>
                                 <View>
@@ -247,19 +263,43 @@ export default function UserProfile() {
 
                             <View style={[styles.header, { marginTop: 30 }]}>
                                 <View style={styles.viewtitle}>
+                                    <Text style={styles.textTitle}>Perfil</Text>
+                                </View>
+                            </View>
+
+                            <View style={[styles.profile, { marginBottom: 20 }]}>
+                                <TouchableOpacity style={styles.icon} onPress={() => goToEditCollaborator()}>
+                                    <FontAwesome name={'pencil-square-o'} size={25} color={'#A1E1D8'}></FontAwesome>
+                                </TouchableOpacity>
+                                <View>
+                                    <View>
+                                        <Text style={[styles.profileProperty]}>NOME</Text>
+                                        <Text style={styles.profileValue}>{name}</Text>
+                                    </View>
+
+                                    <View>
+                                        <Text style={[styles.profileProperty]}>CARGO</Text>
+                                        <Text style={styles.profileValue}>{role}</Text>
+                                    </View>
+                                </View>
+                            </View>
+
+                            <View style={[styles.header, { marginTop: 30 }]}>
+                                <View style={styles.viewtitle}>
                                     <Text style={styles.textTitle}>Colaboradores</Text>
                                 </View>
-                                <TouchableOpacity onPress={goToDependent}>
+                                <TouchableOpacity onPress={() => { }}>
                                     <Text style={styles.newButton}>Novo</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
+
                     }
                     renderItem={({ item: collaborator }: any) => (
                         <View>
-                            {!flag && <Text style={styles.textWaiting}>{text}</Text>}
+                            {/* {!flag && <Text style={styles.textWaiting}>{text}</Text>} */}
                             <View style={[styles.profile, { marginBottom: 20 }]}>
-                                <TouchableOpacity style={styles.icon} onPress={() => goToEditDependent(collaborator)}>
+                                <TouchableOpacity style={styles.icon} onPress={() => goToEditCollaborators(collaborator)}>
                                     <FontAwesome name={'pencil-square-o'} size={25} color={'#A1E1D8'}></FontAwesome>
                                 </TouchableOpacity>
                                 <View>

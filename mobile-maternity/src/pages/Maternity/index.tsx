@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
-import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
+import { useNavigation, RouteProp, useRoute, CommonActions } from '@react-navigation/native';
 import MaskInput from 'react-native-mask-input';
 import { AntDesign } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -65,10 +65,25 @@ export default function Maternity() {
 
             Alert.alert('Cadastro realizado com sucesso')
 
-            navigation.reset({
-                index: 0,
-                routes: [{ name: 'Index' }],
-            });
+            // navigation.reset({
+            //     index: 0,
+            //     routes: [{ name: 'Index' }],
+            // });
+
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [
+                        {
+                            name: "Collaborator",
+                            params: {
+                                id: params.id,
+                                id_hospital: response.data.id
+                            }
+                        }
+                    ]
+                })
+            );
         } catch (err: any) {
             setErrorMessage(err.response.data.error);
             Alert.alert(err.response.data.error);
@@ -76,10 +91,6 @@ export default function Maternity() {
             goToTheTop(_scrollView)
         }
     }
-
-    const handleConfirm = (date: any) => {
-        setCNPJ(date);
-    };
 
     const goToTheTop = (_scrollViewTop: any) => {
         _scrollViewTop.current.scrollTo({ y: 0, animated: true })
@@ -103,11 +114,11 @@ export default function Maternity() {
                 </TouchableOpacity>
             </View>
             <ScrollView showsVerticalScrollIndicator={false} ref={_scrollView}>
-                <KeyboardAvoidingView
+                {/* <KeyboardAvoidingView
                     style={{ flex: 1 }}
                     behavior={Platform.OS === "ios" ? "padding" : "position"}
-                    keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -150}
-                >
+                    keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 150}
+                > */}
                     <View style={styles.content}>
                         {!!errorMessage && <Text style={styles.errorMessage}>{errorMessage} </Text>}
 
@@ -251,7 +262,7 @@ export default function Maternity() {
                             />
                         </View>
                     </View>
-                </KeyboardAvoidingView>
+                {/* </KeyboardAvoidingView> */}
             </ScrollView >
         </View >
     );

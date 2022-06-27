@@ -36,7 +36,8 @@ export default function Collaborator() {
             const response = await api.post('/collaborator/register', {
                 name: name,
                 role: 'Administrator',
-                id_user: params.id
+                id_user: params.id,
+                id_hospital: params.id_hospital
             });
 
             Alert.alert('Cadastro realizado com sucesso')

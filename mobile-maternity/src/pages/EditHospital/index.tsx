@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, Platform, Keyboard, KeyboardAvoidingView } from 'react-native';
 import { useNavigation, RouteProp, useRoute, CommonActions } from '@react-navigation/native';
-import DateTimePickerModal from "react-native-modal-datetime-picker"
 import MaskInput from 'react-native-mask-input';
-import moment from 'moment';
 import { AntDesign } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import styles from './styles'
@@ -16,17 +14,17 @@ import { StackParamList } from '../../types';
 /*Aqui é criado um type para que ao navegar entre telas seja possível passar 
 parâmetros definidos no StackParamList onde foi declarado quais parametros 
 cada tela recebe*/
-type screenNavigationType = StackNavigationProp<StackParamList, 'EditDonor'>
-type editDonorScreenRouteType = RouteProp<StackParamList, 'EditDonor'>
+type screenNavigationType = StackNavigationProp<StackParamList, 'EditHospital'>
+type editHospitalScreenRouteType = RouteProp<StackParamList, 'EditHospital'>
 
-export default function EditDonor() {
+export default function EditHospital() {
     const navigation = useNavigation<screenNavigationType>();
-    const route = useRoute<editDonorScreenRouteType>();
+    const route = useRoute<editHospitalScreenRouteType>();
 
     const { params } = route;
 
     const [name, setName] = useState('');
-    const [birth, setBirth] = useState('');
+    const [cnpj, setCNPJ] = useState('');
     const [street, setStreet] = useState('');
     const [number, setNumber] = useState('');
     const [city, setCity] = useState('');
@@ -35,33 +33,32 @@ export default function EditDonor() {
     const [zipCode, setZipCode] = useState('');
     const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState(null);
-    const [isPickerShow, setIsPickerShow] = useState(false);
 
     useEffect(() => {
         async function LoadData() {
 
-            const response = await api.get(`/donor/list/${params.id}`);
+            const response = await api.get(`/hospital/list/${params.id}`);
 
-            const donor = response.data;
+            const hospital = response.data;
 
-            setName(donor.name);
-            setBirth(donor.birth);
-            setStreet(donor.street);
-            setNumber(JSON.stringify(donor.number));
-            setCity(donor.city);
-            setDistrict(donor.district);
-            setUf(donor.uf);
-            setZipCode(donor.zipCode);
-            setPhone(donor.phone);
+            setName(hospital.company);
+            setCNPJ(hospital.cnpj);
+            setStreet(hospital.street);
+            setNumber(JSON.stringify(hospital.number));
+            setCity(hospital.city);
+            setDistrict(hospital.district);
+            setUf(hospital.uf);
+            setZipCode(hospital.zipCode);
+            setPhone(hospital.phone);
         }
         LoadData();
     }, [params.id]);
 
     async function handleUpdate() {
         try {
-            const validation = await api.post('/donor/validate', {
+            const validation = await api.post('/hospital/validate', {
                 name: name,
-                birth: birth,
+                cnpj: cnpj,
                 street: street,
                 number: number,
                 city: city,
@@ -71,9 +68,9 @@ export default function EditDonor() {
                 phone: phone,
             });
 
-            await api.put(`/donor/update/${params.id}`, {
+            await api.put(`/hospital/update/${params.id}`, {
                 name: name,
-                birth: birth,
+                cnpj: cnpj,
                 street: street,
                 number: number,
                 city: city,
@@ -110,19 +107,6 @@ export default function EditDonor() {
             goToTheTop(_scrollView)
         }
     }
-
-    const showDatePicker = () => {
-        setIsPickerShow(true);
-    };
-
-    const hideDatePicker = () => {
-        setIsPickerShow(false);
-    };
-
-    const handleConfirm = (date: any) => {
-        setBirth(date)
-        hideDatePicker();
-    };
 
     const goToTheTop = (_scrollViewTop: any) => {
         _scrollViewTop.current.scrollTo({ y: 0, animated: true })
@@ -161,7 +145,7 @@ export default function EditDonor() {
                                 keyboardType='default'
                                 multiline={false}
                                 clearButtonMode='always'
-                                maxLength={25}
+                                maxLength={50}
                                 placeholder='Adicione o nome'
                                 placeholderTextColor="#C3C3C5"
                                 value={name}
@@ -170,20 +154,19 @@ export default function EditDonor() {
                             />
                         </View>
                         <View style={styles.viewInput}>
-                            <Text style={styles.titles}>DATA DE NASCIMENTO*</Text>
-                            <View style={styles.textInput}>
-                                <Text style={{ marginTop: 10, fontWeight: '200' }} onPress={showDatePicker}>
-                                    {moment(birth).format('DD/MM/YYYY')}
-                                </Text>
-                            </View>
-                            {isPickerShow && (
-                                <DateTimePickerModal
-                                    isVisible={isPickerShow}
-                                    mode="date"
-                                    onConfirm={handleConfirm}
-                                    onCancel={hideDatePicker}
-                                />
-                            )}
+                            <Text style={styles.titles}>CNPJ*</Text>
+                            <TextInput
+                                style={styles.textInput}
+                                keyboardType='default'
+                                multiline={false}
+                                clearButtonMode='always'
+                                maxLength={25}
+                                placeholder='Adicione o CNPJ'
+                                placeholderTextColor="#C3C3C5"
+                                value={cnpj}
+                                onChangeText={cnpj => setCNPJ(cnpj)}
+                                onPressIn={() => { setErrorMessage(null) }}
+                            />
                         </View>
                         <View style={styles.location}>
                             <View style={styles.viewColOne}>
@@ -298,5 +281,4 @@ export default function EditDonor() {
             </ScrollView>
         </View>
     );
-
 }

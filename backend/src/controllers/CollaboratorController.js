@@ -7,7 +7,7 @@ module.exports = {
     async register(request, response) {
         try {
             //Recebendo nome e id de usuário do corpo da requisição
-            const { name, id_user, role } = request.body;
+            const { name, id_user, role, id_hospital } = request.body;
 
             /*Aqui é feito um insert na tabela de colaboradores com os dados que foram recebidos,
             no final a variável 'id' recebe o id do registro criado.*/
@@ -15,7 +15,8 @@ module.exports = {
                 .insert({
                     name: name,
                     role: role,
-                    id_user: id_user
+                    id_user: id_user,
+                    id_hospital: id_hospital
                 })
 
             //Em caso de sucesso é retornado o id para o cliente.
@@ -52,7 +53,8 @@ module.exports = {
             o retorno povoa a váriavel 'collaborator' com um objeto contendo o registro*/
             const collaborator = await connection('collaborator')
                 .select('*')
-                .where('id', id)
+                .where('id_user', id)
+                .first()
 
             //Em caso de sucesso é retornado o objeto com o registro
             return response.json(collaborator)
@@ -66,29 +68,52 @@ module.exports = {
     async indexByHospitalId(request, response) {
         try {
             //Recebendo o id do hospital pelos parâmetros da requisição
-            const { id } = request.params;
-
-            //Aqui é retornado somente as chave estrangeira "id_collaborator" de todos os registros da tabela hospital onde o id seja igual ao recebido na requisição
-            const id_collaborators = await connection('hospital')
-                .select('id_collaborator')
-                .where('id', id)
-
-            //Aqui é feito um for somente para que o array id_collaborators extraia o valor dos objetos que nele existem
-            for (let i = 0; i < id_collaborators.length; i++) {
-                id_collaborators[i] = id_collaborators[i].id_collaborator
-            }
+            const { id_hospital } = request.params;
+            const { id_collaborator } = request.headers;
 
             /*Na tabela de colaboradores é feito um select onde no campo id, exista algum dos valores do array id_collaborators, 
             o retorno povoa a váriavel 'collaborator' com um objeto contendo o registro*/
             const collaborator = await connection('collaborator')
+                .where('id_hospital', id_hospital)
+                .whereNot('id', id_collaborator)
                 .select('*')
-                .whereIn('id', id_collaborators)
+
 
             //Em caso de sucesso é retornado o objeto com o registro
             return response.json(collaborator)
         } catch (err) {
             //Em caso de falha é exibido no terminal o erro
             console.log(err)
+        }
+    },
+
+    //Método para atualizar o registro de um colaborador
+    async updateCollaborator(request, response) {
+        try {
+            //Recebendo os dados do colaborador e atribuindo cada informação a uma váriavel.
+            const {
+                name,
+                role,
+            } = request.body;
+
+            //Recebendo o 'id' de colaborador.
+            const { id } = request.params;
+
+            /*Atualizando as informações da tabela 'collaborator', passando as váriaveis recebidas do lado do cliente.
+            Será atualizado o registro onde o campo 'id' seja igual ao id recebido nos parâmetros da rota.*/
+            const collaborator = await connection('collaborator')
+                .update({
+                    name,
+                    role
+                })
+                .where({ id: id })
+
+            //Em caso de sucesso é retornado o objeto com o registro atualizado
+            return response.json(collaborator);
+
+        } catch (err) {
+            //Em caso de falha é retornado a mensagem de erro.
+            return response.status(500).json({ error: 'Erro ao atualizar informações!' });
         }
     },
 

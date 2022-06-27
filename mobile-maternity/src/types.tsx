@@ -6,11 +6,10 @@ export type StackParamList = {
     Login: undefined;
     Email: undefined;
     Password: { user: string }
-    Collaborator: { id: string }
+    Collaborator: { id: string, id_hospital: string }
     Maternity: { id: string }
-    EditDonor: { id: string }
-    Dependent: { id: string, id_donor: string }
-    EditDependent: { id: string, id_donor: string, dependent: object }
+    EditHospital: { id: string }
+    EditCollaborator: { id: string, id_collaborator: string, collaborator: object }
     HospitalDetails: { hospital: object, id_user: string }
     ScheduleDetails: { schedule: object }
 };

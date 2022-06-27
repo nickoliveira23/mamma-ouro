@@ -6,6 +6,7 @@ exports.up = function (knex) {
         table.string('role').notNullable();
 
         table.integer('id_user').references('user.id').notNullable().onDelete('CASCADE');
+        table.integer('id_hospital').references('hospital.id').onDelete('CASCADE');
     })
 };
 

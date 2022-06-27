@@ -43,7 +43,7 @@ export default function Email() {
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 200 : 250}
+                keyboardVerticalOffset={Platform.OS === "ios" ? 200 : 150}
             >
                 <TouchableOpacity style={styles.header} onPress={() => navigation.goBack()}>
                     <AntDesign style={styles.leftIcon} name='left' size={30} color='#414141' />

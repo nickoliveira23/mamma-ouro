@@ -66,7 +66,7 @@ module.exports = {
     //Método para atualizar o registro de um dependente
     async updateDependent(request, response) {
         try {
-            //Recebendo os dados da doadora e atribuindo cada informação a uma váriavel.
+            //Recebendo os dados do dependente e atribuindo cada informação a uma váriavel.
             const {
                 name,
                 birth,
@@ -89,7 +89,7 @@ module.exports = {
 
         } catch (err) {
             //Em caso de falha é retornado a mensagem de erro.
-            return response.status(500).json({ error: 'Erro ao atualizar informações de perfil!' });
+            return response.status(500).json({ error: 'Erro ao atualizar informações!' });
         }
     },
 

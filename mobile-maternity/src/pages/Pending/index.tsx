@@ -11,6 +11,7 @@ import api from '../../services/api';
 
 //Importando o type referente a essa tela
 import { TabParamList } from '../../types';
+import moment from 'moment';
 
 /*Aqui é criado um type para que ao navegar entre telas seja possível passar 
 parâmetros definidos no StackParamList onde foi declarado quais parametros 
@@ -27,75 +28,26 @@ export default function Pending() {
     const controller = new AbortController;
     const signal = controller.signal;
 
-    const [hospitals, setHospitals] = useState([]);
-    const [location, setLocation] = useState<any>();
-    const [latitude, setLatitude] = useState('')
-    const [longitude, setLongitude] = useState('')
-
-    const [errorMsg, setErrorMsg] = useState('');
-
-    let flag = false;
-
-    async function getCurrentPosition() {
-        try {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-
-            if (status !== 'granted') {
-                setErrorMsg('Permissão para acessar local negada!');
-                return Alert.alert(
-                    "Permissions needed",
-                    "This app does not currently have permission to access your location",
-                    [{ text: "Ok", style: "cancel" }]
-                );
-            }
-            const {
-                coords: { latitude, longitude },
-            } = await Location.getCurrentPositionAsync();
-
-            setLocation([latitude, longitude])
-            setLatitude(JSON.stringify(latitude))
-            setLongitude(JSON.stringify(longitude))
-        } catch (err) {
-            console.log(err)
-        }
-    }
+    const [appointment, setAppointment] = useState([]);
 
     useEffect(() => {
-        getCurrentPosition()
-    }, []);
-
-    let text = 'Carregando...';
-    if (errorMsg) {
-        flag = false;
-        text = errorMsg;
-    } else if (location && latitude && longitude) {
-        flag = true;
-        text = JSON.stringify(latitude + "," + longitude)
-    }
-
-    async function loadData(signal: any) {
-        try {
-            if (flag) {
-                const response = await api.get('/hospital/list', {
-                    signal,
-                    headers: {
-                        latitude: latitude,
-                        longitude: longitude
-                    }
+        let mounted = true;
+        (async () => {
+            try {
+                const response = await api.get(`/schedule/list/hospital/${params.id}`, {
+                    signal
                 });
-                setHospitals(response.data);
-                setIsRefreshing(false)
-
+                if (mounted) {
+                    setAppointment(response.data);
+                }
+            } catch (err) {
+                Alert.alert('Algo deu errado!')
             }
-        } catch (err) {
-            console.log(err)
-        }
-    };
+        })();
 
-    useEffect(() => {
-        loadData(signal);
-        return () => controller.abort();
-    }, [location, latitude, longitude]);
+        return () => { mounted = false };
+    }, [appointment]);
+
 
     async function handleLogout() {
         await AsyncStorage.clear();
@@ -104,11 +56,10 @@ export default function Pending() {
             CommonActions.reset({
                 index: 0,
                 routes: [
-                    { name: 'Index', }
+                    { name: 'Index' }
                 ]
-
             })
-        )
+        );
     }
 
     function createTwoButtonAlert() {
@@ -129,83 +80,53 @@ export default function Pending() {
         );
     }
 
-    const [isRefreshing, setIsRefreshing] = useState(false)
-
-    const onRefresh = () => {
-        //set isRefreshing to true
-        setIsRefreshing(true);
-        loadData(signal);
-        // and set isRefreshing to false at the end of your callApiMethod()
-    }
-
-    const goToHospitalDetails = (hospital: any) => {
+    const goToScheduleDetails = (schedule: any) => {
         navigation.dispatch(
             CommonActions.navigate({
-                name: 'HospitalDetails',
+                name: 'ScheduleDetails',
                 params: {
-                    hospital: hospital,
-                    id_user: params.id
+                    schedule
                 }
             })
         )
     }
 
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.viewTitle}>
-                    <Text style={styles.textTitle}>Bancos de leite próximos</Text>
+                    <Text style={styles.textTitle}>Agendamentos</Text>
                 </View>
-                <TouchableOpacity style={styles.logoutIcon} onPress={createTwoButtonAlert}>
+                <TouchableOpacity onPress={createTwoButtonAlert}>
                     <MaterialIcons name={'logout'} size={25} color={'#414141'} />
                 </TouchableOpacity>
             </View>
-            {/* <View style={styles.viewButtonSaved}>
-                <TouchableOpacity style={styles.buttonSaved}>
-                    <View style={styles.bookmarkIcon}>
-                        <Ionicons name="star" size={20} color="#A1E1D8" />
-                    </View>
-                    <View>
-                        <Text style={styles.textSaved}>Mostrar hospitais salvos</Text>
-                    </View>
-                    <View style={styles.ArrowRightIcon}>
-                        <Feather name="arrow-right" size={20} color="#A1E1D8" />
-                    </View>
-                </TouchableOpacity>
-            </View> */}
             <View style={styles.viewFlatList}>
-                {!flag && <Text style={styles.textWaiting}>{text}</Text>}
                 <FlatList
-                    onRefresh={onRefresh}
-                    refreshing={isRefreshing}
-                    data={hospitals}
                     showsVerticalScrollIndicator={false}
-                    keyExtractor={(hospital: any) => String(hospital.id)}
-                    renderItem={({ item: hospital }) => (
-                        <View style={styles.hospitals}>
+                    data={appointment}
+                    keyExtractor={(appointment: any) => String(appointment.id)}
+                    renderItem={({ item: appointment }) => (
+                        <View style={styles.schedule}>
                             <View>
-                                <Text style={styles.hospitalProperty}>NOME</Text>
-                                <Text style={styles.hospitalValue}>{hospital.company}</Text>
+                                <Text style={styles.hospitalProperty}>LOCAL</Text>
+                                <Text style={styles.hospitalValue}>{appointment.company}</Text>
                             </View>
                             <View>
                                 <Text style={styles.hospitalProperty}>ENDEREÇO</Text>
-                                <Text style={styles.hospitalValue}>
-                                    {hospital.street},
-                                    {hospital.number} -
-                                    {hospital.district},
-                                    {hospital.city} -
-                                    {hospital.uf},
-                                    {hospital.zipCode}
-                                </Text>
+                                <Text style={styles.hospitalValue}>{appointment.street}, {appointment.number} - {appointment.district}, {appointment.city} - {appointment.uf}, {appointment.zipCode}</Text>
+                            </View>
+                            <View>
+                                <Text style={styles.hospitalProperty}>DATA/HORÁRIO</Text>
+                                <Text style={styles.hospitalValue}>{moment(appointment.date_time).format('DD/MM/YYYY')} - {appointment.hour}</Text>
                             </View>
                             <View style={styles.button}>
-                                <TouchableOpacity onPress={() => goToHospitalDetails(hospital)}>
+                                <TouchableOpacity onPress={() => goToScheduleDetails(appointment)}>
                                     <Text style={styles.buttonText}>Detalhes...</Text>
                                 </TouchableOpacity>
-                                <View>
-                                    <Feather name="arrow-right" color="#A1E1D8" size={20} onPress={() => goToHospitalDetails(hospital)} />
-                                </View>
+                                <TouchableOpacity onPress={() => { }}>
+                                    <Feather name="arrow-right" color="#A1E1D8" size={20} onPress={() => goToScheduleDetails(appointment)} />
+                                </TouchableOpacity>
                             </View>
                         </View>
                     )}

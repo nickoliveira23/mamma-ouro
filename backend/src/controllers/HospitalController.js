@@ -14,7 +14,7 @@ module.exports = {
             const {
                 company, cnpj, street, number,
                 city, district, uf, zipCode, phone,
-                place_id, id_donor, id_collaborator
+                place_id
             } = request.body;
 
             /*Aqui é feito um insert na tabela de hospital com os dados que foram recebidos,
@@ -31,8 +31,6 @@ module.exports = {
                     zipCode: zipCode,
                     phone: phone,
                     place_id: place_id,
-                    id_donor: id_donor,
-                    id_collaborator: id_collaborator
                 })
 
             //Em caso de sucesso é retornado o id para o cliente.
@@ -68,7 +66,7 @@ module.exports = {
             /*Na tabela de hospitais é feito um select onde o id_user é igual ao id recebido pelo cliente, 
             o retorno povoa a váriavel 'hospital' com um objeto contendo o registro*/
             const hospital = await connection('hospital')
-                .where('id_collaborator', id)
+                .where('id', id)
                 .select('*')
                 .first();
 
@@ -87,7 +85,6 @@ module.exports = {
         try {
             //Recebendo coordenadas pelo cabeçalho da requisição
             const { latitude, longitude } = request.headers
-            console.log(latitude, longitude)
 
             //Váriavel 'key' recebe a chave da API do Google
             // const key = process.env.GOOGLE_API_KEY

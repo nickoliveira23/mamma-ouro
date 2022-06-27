@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { CommonActions, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import styles from './styles';
@@ -34,15 +34,27 @@ export default function Password() {
             const register = await api.post('/user/register', {
                 email: params.user,
                 password: password,
-                type: 'donor'
+                type: 'collaborator'
             });
 
             const { id } = register.data
 
-            navigation.reset({
-                index: 0,
-                routes: [{ name: 'Register', params: { id: id } }],
-            });
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [
+                        {
+                            name: "Maternity",
+                            params: { id: id }
+                        }
+                    ]
+                })
+            );
+
+            // navigation.reset({
+            //     index: 0,
+            //     routes: [{ name: 'Register', params: { id: id } }],
+            // });
         } catch (err: any) {
             setErrorMessage(err.response.data.validation.body.message);
             Alert.alert(err.response.data.validation.body.message);
@@ -55,7 +67,7 @@ export default function Password() {
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 200 : 250}
+                keyboardVerticalOffset={Platform.OS === "ios" ? 200 : 50}
             >
                 <TouchableOpacity style={styles.header} onPress={() => navigation.goBack()}>
                     <AntDesign style={styles.leftIcon} name='left' size={30} color='#414141' />

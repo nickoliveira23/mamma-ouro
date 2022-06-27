@@ -10,9 +10,9 @@ import Email from './pages/Email';
 import Password from './pages/Password';
 import Collaborator from './pages/Collaborator';
 import Maternity from './pages/Maternity';
-import EditDonor from './pages/EditDonor';
+import EditHospital from './pages/EditHospital';
 import Dependent from './pages/Dependent';
-import EditDependent from './pages/EditDependent';
+import EditCollaborator from './pages/EditCollaborator';
 import Pending from './pages/Pending';
 import UserProfile from './pages/UserProfile';
 import Schedule from './pages/Schedule';
@@ -69,9 +69,9 @@ export default function Routes() {
         <Stack.Screen name='Login' component={Login} />
         <Stack.Screen name='Email' component={Email} />
         <Stack.Screen name='Password' component={Password} />
-        <Stack.Screen name='EditDonor' component={EditDonor} />
+        <Stack.Screen name='EditHospital' component={EditHospital} />
         <Stack.Screen name='Dependent' component={Dependent} />
-        <Stack.Screen name='EditDependent' component={EditDependent} />
+        <Stack.Screen name='EditCollaborator' component={EditCollaborator} />
         <Stack.Screen name='Maternity' component={Maternity} />
         <Stack.Screen name='Collaborator' component={Collaborator} />
         <Stack.Screen name='Home' component={Home} />
